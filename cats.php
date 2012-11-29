@@ -8,7 +8,7 @@
 
 error_reporting(E_ALL);
 
-header('Content-Type: text/plain; charset=utf-8');
+header('Access-Control-Allow-Origin: *');
 
 // MediaWiki namespaces
 define('NS_MAIN', 0);
@@ -56,4 +56,11 @@ if (!$_REQUEST['lang'] || !$_REQUEST['cat']) {
 $lister = new CategoryLister($_REQUEST['lang']);
 $r = $lister->listRecursively($_REQUEST['cat'],
   $_REQUEST['depth'] ? intval($_REQUEST['depth']) : 3);
-echo implode($r, "\n");
+
+if (FALSE !== strpos($_SERVER['HTTP_ACCEPT'], 'application/json')) {
+  header('Content-Type: application/json');
+  echo json_encode($r);
+} else {
+  header('Content-Type: text/plain; charset=utf-8');
+  echo implode($r, "\n");
+}
