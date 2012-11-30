@@ -49,7 +49,7 @@ if (!$_REQUEST['lang'] || !$_REQUEST['cat']) {
   header('HTTP/1.1 400');
   echo "Lightweight Category Scanner by simon04 (licensed GPL 3)\n";
   echo "Required parameters: lang, cat\n";
-  echo "Optional parameters: depth";
+  echo "Optional parameters: depth, json=1";
   exit();
 }
 
@@ -58,8 +58,8 @@ $r = $lister->listRecursively($_REQUEST['cat'],
   $_REQUEST['depth'] ? intval($_REQUEST['depth']) : 3);
 $r = array_values(array_unique($r));
 
-if (FALSE !== strpos($_SERVER['HTTP_ACCEPT'], 'application/json')) {
-  header('Content-Type: application/json');
+if ($_REQUEST['json'] || FALSE !== strpos($_SERVER['HTTP_ACCEPT'], 'application/json')) {
+  header('Content-Type: application/json; charset=utf-8');
   echo json_encode($r);
 } else {
   header('Content-Type: text/plain; charset=utf-8');
