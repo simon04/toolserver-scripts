@@ -56,6 +56,7 @@ if (!$_REQUEST['lang'] || !$_REQUEST['cat']) {
 $lister = new CategoryLister($_REQUEST['lang']);
 $r = $lister->listRecursively($_REQUEST['cat'],
   $_REQUEST['depth'] ? intval($_REQUEST['depth']) : 3);
+$r = array_values(array_unique($r));
 
 if (FALSE !== strpos($_SERVER['HTTP_ACCEPT'], 'application/json')) {
   header('Content-Type: application/json');
