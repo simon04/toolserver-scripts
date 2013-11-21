@@ -6,7 +6,7 @@
  * @author simon04
  */
 
-error_reporting(E_ALL);
+error_reporting(E_ALL ^ E_NOTICE);
 
 header('Access-Control-Allow-Origin: *');
 
@@ -19,8 +19,8 @@ class CategoryLister {
 
   public function __construct($lang) {
     $ts_pw = posix_getpwuid(posix_getuid());
-    $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/.my.cnf");
-    $this->db = new PDO("mysql:host={$lang}wiki-p.rrdb.toolserver.org;dbname={$lang}wiki_p",
+    $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/replica.my.cnf");
+    $this->db = new PDO("mysql:host={$lang}wiki.labsdb;dbname={$lang}wiki_p",
       $ts_mycnf['user'], $ts_mycnf['password']);
     $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   }
