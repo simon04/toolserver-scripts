@@ -17,12 +17,13 @@ define('NS_CATEGORY', 14);
 
 class CategoryLister {
 
-  public function __construct($lang) {
+  public function __construct($lang, $type) {
     $ts_pw = posix_getpwuid(posix_getuid());
     $ts_mycnf = parse_ini_file($ts_pw['dir'] . "/replica.my.cnf");
     $this->db = new PDO("mysql:host={$lang}wiki.labsdb;dbname={$lang}wiki_p",
       $ts_mycnf['user'], $ts_mycnf['password']);
     $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $this->type = $type;
   }
 
   public function listContent($cat, $ns) {
@@ -34,7 +35,7 @@ class CategoryLister {
   }
 
   public function listRecursively($cat, $depth = 3) {
-    $pages = $this->listContent($cat, NS_MAIN);
+    $pages = $this->listContent($cat, $this->type);
     if ($depth > 0) {
       foreach ($this->listContent($cat, NS_CATEGORY) as $subcat) {
         $pages = array_merge($pages, $this->listRecursively($subcat, $depth - 1));
@@ -53,7 +54,7 @@ if (!$_REQUEST['lang'] || !$_REQUEST['cat']) {
   exit();
 }
 
-$lister = new CategoryLister($_REQUEST['lang']);
+$lister = new CategoryLister($_REQUEST['lang'], isset($_REQUEST['type']) ? intval($_REQUEST['type']) : NS_MAIN);
 $r = $lister->listRecursively($_REQUEST['cat'],
   $_REQUEST['depth'] ? intval($_REQUEST['depth']) : 3);
 $r = array_values(array_unique($r));
